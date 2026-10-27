@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مستشار العقارات الذكي | نظام الوكيل والمستشار</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #2563eb;
+      --accent: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header */
+    header { background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.1rem; color: #60a5fa; display: flex; align-items: center; gap: 8px; }
+    .status-badge { font-size: 0.75rem; background: #065f46; color: #34d399; padding: 4px 8px; border-radius: 9999px; }
+
+    /* Tabs */
+    .tabs { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); }
+    .tab { flex: 1; text-align: center; padding: 10px; font-size: 0.85rem; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; }
+    .tab.active { color: #60a5fa; border-color: #60a5fa; font-weight: bold; }
+
+    /* Main Container */
+    .content { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; }
+    .tab-content { display: none; height: 100%; flex-direction: column; }
+    .tab-content.active { display: flex; }
+
+    /* Chat Section */
+    #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px; }
+    .msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+    .msg.user { background: var(--primary); align-self: flex-start; border-bottom-right-radius: 2px; }
+    .msg.assistant { background: var(--card-bg); align-self: flex-end; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
+    .source-tag { display: inline-block; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; }
+    .source-cache { background: #374151; color: #9ca3af; }
+    .source-pro { background: #581c87; color: #d8b4fe; }
+
+    /* Input Bar */
+    .input-bar { display: flex; gap: 8px; padding: 10px; background: var(--card-bg); border-top: 1px solid var(--border); }
+    .input-bar textarea { flex: 1; background: #0f172a; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; resize: none; height: 42px; font-size: 0.9rem; }
+    .btn { background: var(--primary); color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+    .btn:disabled { opacity: 0.5; }
+
+    /* Settings & Data Storage UI */
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .card h3 { font-size: 0.95rem; margin-bottom: 8px; color: #38bdf8; }
+    .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+    .card input, .card textarea { width: 100%; background: #0f172a; border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 8px; }
+    .danger-btn { background: #dc2626; }
+    .success-btn { background: var(--accent); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🏢 المساعد العقاري الخبير</h1>
+    <span id="sync-status" class="status-badge">العقل محدّث ✓</span>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('chat')">المستشار الذكي 💬</div>
+    <div class="tab" onclick="switchTab('data')">داتا الوحدات 📑</div>
+    <div class="tab" onclick="switchTab('brain')">عقل المعرفة 🧠</div>
+    <div class="tab" onclick="switchTab('settings')">الإعدادات ⚙️</div>
+  </div>
+
+  <div class="content">
+    <!-- Chat View -->
+    <div id="tab-chat" class="tab-content active">
+      <div id="chat-box">
+        <div class="msg assistant">مرحباً يا بطل! أنا جاهز لمساعدتك في استخراج الوحدات، الرد على أصعب العملاء، أو الإجابة على أي استشارة قانونية وعقارية في مصر.</div>
+      </div>
+      <div class="input-bar">
+        <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة عقارية/قانونية..."></textarea>
+        <button id="send-btn" class="btn" onclick="handleSend()">إرسال</button>
+      </div>
+    </div>
+
+    <!-- Listings Inventory View -->
+    <div id="tab-data" class="tab-content">
+      <div class="card">
+        <h3>تغذية داتا شات الواتساب (الإعلانات)</h3>
+        <p>ارفع ملفات الشات النصية أو الصق الرسائل هنا لتحديث قائمة شقق وفيلات التمليك والإيجار.</p>
+        <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
+        <textarea id="raw-data-input" rows="5" placeholder="أو الصق رسائل الواتساب هنا مباشرة..."></textarea>
+        <button class="btn success-btn" onclick="saveRawListings()">حفظ في قاعدة البيانات</button>
+        <button class="btn danger-btn" style="margin-top: 8px;" onclick="clearInventory()">مسح كل داتا الإعلانات الحالية 🗑️</button>
+      </div>
+      <div class="card">
+        <h3>حالة الوحدات المخزنة</h3>
+        <p id="inventory-stats">عدد الإعلانات المسجلة: 0 إعلان</p>
+      </div>
+    </div>
+
+    <!-- Core Knowledge (Mentor) View -->
+    <div id="tab-brain" class="tab-content">
+      <div class="card">
+        <h3>المعرفة العقارية الأساسية (تحديثات البرو)</h3>
+        <p>هنا يتم حفظ القوانين، الخرائط، أنظمة المطورين، وحلول الأسئلة المعقدة التي تعلمها من Gemini Pro.</p>
+        <button class="btn" onclick="syncKnowledgeWithPro()">تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄</button>
+      </div>
+      <div class="card" style="flex: 1; overflow-y: auto;">
+        <h3>المعلومات المتراكمة في الذاكرة:</h3>
+        <div id="brain-preview" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">جاري تحميل المعرفة...</div>
+      </div>
+    </div>
+
+    <!-- Settings View -->
+    <div id="tab-settings" class="tab-content">
+      <div class="card">
+        <h3>مفتاح Google Gemini API المجاني</h3>
+        <p>المفتاح ده بيشغل النموذجين معاً (Flash السريع + Pro المستشار الأكبر) مجاناً من Google AI Studio.</p>
+        <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا...">
+        <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
+      </div>
+      <div class="card">
+        <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. بياناتك وإعلاناتك لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل متصفحك مباشرة.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System Prompt for Junior Model (Flash)
+    const JUNIOR_SYSTEM_INSTRUCTION = `
+أنت مستشار عقاري مصري خبير من الطراز الأول في مدينتي، الرحاب، القاهرة الجديدة، العاصمة، وجميع أنحاء مصر.
+لديك مهمتان:
+1. الإجابة على الاستشارات، قوانين العقارات (الفرق بين عقد طلعت مصطفى وتخصيص الجهات، شروط التنازل، الودائع، النادي)، وفهم رسائل العملاء المبهمة وتحويلها إلى متطلبات دقيقة مع كتابة ردود بيعية مقنعة جداً.
+2. استخراج الوحدات من "داتا الإعلانات" بدقة متناهية وفق الشروط الصارمة التالية:
+   - وحدات الإيجار: استبعاد أي إعلان مر على نشره أكثر من 25 يوماً من تاريخ اليوم.
+   - إذا كان الإعلان ينص على "العمولة من المستأجر"، ضع فوراً وبوضوح: (⚠️ تنبيه: لازم مستأجر مباشر).
+   - كتابة كود الوحدة الأصلي (مثل M120) أو كود مخصص مميز لو الوحدة بدون كود.
+   - حساب عدد الأيام منذ نشر الوحدة.
+   - الترتيب: المطابق 100% ثم الأقرب مواصفات ثم الأقرب ميزانية.
+إذا سألك المستخدم سؤالاً استشارياً أو قانونياً، أجب حصراً من واقع "المعرفة العقارية المخزنة" المرفقة بالسياق. إذا لم تكن المعلومة متوفرة في المعرفة، قل: [NEED_PRO] ليتم استدعاء المستشار الأكبر فوراً وتخزين الإجابة للأبد.
+تاريخ اليوم المرجعي: 27 أكتوبر 2026.
+`;
+
+    // Mentor (Pro) Prompt for Knowledge Ingestion
+    const PRO_SYSTEM_INSTRUCTION = `
+أنت المستشار العقاري الأعلى وخبير السوق المصري والاستثمار والتطوير العقاري.
+مهمتك إمداد المساعد بتفاصيل دقيقة وشاملة وعميقة عن:
+- جغرافية وتفاصيل مراحل مدينتي (B1 حتى B15، مجموعات الفيلات، الأنماط 100، 200، 300، 400، 600، 700، التاون والتوين).
+- الرحاب 1 و 2 والمراحل والأسواق (القديم والشرقي ومول أفينيو).
+- الفروق القانونية والإجرائية (تنازل طلعت مصطفى، التخصيص، رخص البناء، رسوم التصرفات العقارية، شروط جهاز القاهرة الجديدة).
+- تطبيقات الاستثمار العقاري الموثوقة في مصر وآليات عملها.
+أجب بمعلومات حصرية ومنظمة بدقة ليتم حفظها كقاعدة معرفة دائمة.
+`;
+
+    // Local Storage Keys
+    const KEY_API = "re_api_key";
+    const KEY_INVENTORY = "re_inventory_data";
+    const KEY_BRAIN = "re_core_brain";
+    const KEY_LAST_SYNC = "re_last_sync_date";
+
+    // Initialize Default Knowledge if empty
+    const DEFAULT_KNOWLEDGE = `
+- خريطة مدينتي: مجموعة 121، 122، 123، 124، 125، 126 تابعة لمرحلة B12 (بجوار الكرافت زون، الإيست هب، ومجرى السيل).
+- مجموعة 101 حتى 104 في مدينتي تابعة لمرحلة B10 (بجوار All Seasons Park).
+- مراحل الرحاب: الرحاب 1 تضم المراحل من الأولى حتى الخامسة وبها السوق القديم ومول 1 و 2. الرحاب 2 تضم المراحل من السابعة حتى العاشرة وبها السوق الشرقي ومول أفينيو.
+- الفرق القانوني: عقود طلعت مصطفى يتم التنازل عنها داخل مقر الشركة بموجب استيفاء الشيكات وبراءة الذمة وتنازل الشركة. التخصيص (شرطة، هيئة مجتمعات، بنك إسكان) يتم التنازل عنه داخل جهاز المدينة التابع بتوكيل رسمي وإذن توريد وتصرفات عقارية وعضوية النادي غالباً اختيارية.
+`;
+
+    // Switch Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // Save Data
+    function saveApiKey() {
+      const key = document.getElementById('api-key').value.trim();
+      if (key) {
+        localStorage.setItem(KEY_API, key);
+        alert("تم حفظ مفتاح API بنجاح!");
+      }
+    }
+
+    function saveRawListings() {
+      const text = document.getElementById('raw-data-input').value.trim();
+      if (!text) return;
+      let existing = localStorage.getItem(KEY_INVENTORY) || "";
+      existing += "\n" + text;
+      localStorage.setItem(KEY_INVENTORY, existing);
+      document.getElementById('raw-data-input').value = "";
+      updateStats();
+      alert("تمت إضافة البيانات لقاعدة إعلاناتك!");
+    }
+
+    function handleFileUpload(e) {
+      const files = e.target.files;
+      let combined = "";
+      let readCount = 0;
+      for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          combined += "\n" + evt.target.result;
+          readCount++;
+          if (readCount === files.length) {
+            let existing = localStorage.getItem(KEY_INVENTORY) || "";
+            localStorage.setItem(KEY_INVENTORY, existing + combined);
+            updateStats();
+            alert("تم تحميل كل الملفات وتحديث قاعدة الإعلانات بنجاح!");
+          }
+        };
+        reader.readAsText(files[i]);
+      }
+    }
+
+    function clearInventory() {
+      if (confirm("هل أنت متأكد من مسح جميع داتا الإعلانات المخزنة؟")) {
+        localStorage.removeItem(KEY_INVENTORY);
+        updateStats();
+        alert("تم تفريغ الداتا بنجاح.");
+      }
+    }
+
+    function updateStats() {
+      const inv = localStorage.getItem(KEY_INVENTORY) || "";
+      const matches = inv.match(/كود|Ms|M\d+/gi);
+      const count = matches ? matches.length : (inv.length > 50 ? "بيانات نشطة" : 0);
+      document.getElementById('inventory-stats').innerText = `حجم الداتا المسجلة: ${Math.round(inv.length / 1024)} كيلوبايت (~ ${count} إعلان)`;
+      document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
+    }
+
+    // Call Gemini API Function
+    async function callGemini(model, systemInstruction, prompt) {
+      const apiKey = localStorage.getItem(KEY_API);
+      if (!apiKey) {
+        alert("برجاء إدخال Gemini API Key في تبويب الإعدادات أولاً!");
+        switchTab('settings');
+        throw new Error("No API Key");
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+        generationConfig: {
+          temperature: 0.0 // Zero hallucination
+        }
+      };
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || "خطأ في الاتصال بالنموذج");
+      }
+
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    // Handle User Message
+    async function handleSend() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMsg(text, 'user');
+      input.value = "";
+      document.getElementById('send-btn').disabled = true;
+
+      const chatBox = document.getElementById('chat-box');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'msg assistant';
+      loadingDiv.innerText = "جاري التحليل واستخراج الأنسب...";
+      chatBox.appendChild(loadingDiv);
+
+      try {
+        const brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
+        const inventory = localStorage.getItem(KEY_INVENTORY) || "لا توجد إعلانات مرفوعة بعد.";
+
+        const fullPrompt = `
+[المعرفة العقارية المخزنة]:
+${brain}
+
+[داتا الوحدات المتاحة]:
+${inventory}
+
+[طلب العميل أو الاستفسار]:
+${text}
+`;
+        // Junior Model Call (Fast & Free)
+        let reply = await callGemini("gemini-1.5-flash", JUNIOR_SYSTEM_INSTRUCTION, fullPrompt);
+
+        // Escalation Mechanism: If Junior needs Senior Pro reasoning
+        if (reply.includes("[NEED_PRO]")) {
+          loadingDiv.innerText = "طلب عميق.. جاري استدعاء المستشار الأكبر (Gemini Pro) للتحليل والحفظ في الذاكرة 🧠...";
+          const proReply = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, `السؤال التالي لم يكن متاحاً في المعرفة: ${text}. أجب إجابة قانونية وعقارية شاملة.`);
+          
+          // Learn & Cache into Brain
+          let updatedBrain = brain + "\n- س: " + text + "\n- ج: " + proReply;
+          localStorage.setItem(KEY_BRAIN, updatedBrain);
+          updateStats();
+
+          loadingDiv.innerHTML = `<span class="source-tag source-pro">تم التفكير بواسطة Pro وتخزينه في العقل</span><br>` + proReply;
+        } else {
+          loadingDiv.innerHTML = `<span class="source-tag source-cache">المستشار السريع (قاعدة المعرفة + الداتا)</span><br>` + reply;
+        }
+
+      } catch (e) {
+        loadingDiv.innerText = "عذراً، حدث خطأ: " + e.message;
+      } finally {
+        document.getElementById('send-btn').disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function appendMsg(text, sender) {
+      const box = document.getElementById('chat-box');
+      const div = document.createElement('div');
+      div.className = `msg ${sender}`;
+      div.innerText = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // Daily Sync with Senior (Pro)
+    async function syncKnowledgeWithPro() {
+      const apiKey = localStorage.getItem(KEY_API);
+      if (!apiKey) return alert("سجل مفتاح الـ API أولاً من الإعدادات!");
+      
+      const btn = event.target;
+      btn.innerText = "جاري استشارة وتحديث المعرفة من Pro 🧠...";
+      btn.disabled = true;
+
+      try {
+        const query = "لخص أهم تحديثات حركة السوق العقاري المصري، القوة الشرائية الحالية، وأهم الفروق الإجرائية وتطبيقات الاستثمار المعتمدة بصيغة نقاط مركزة ودقيقة ليتم استخدامها كمرجع استشاري.";
+        const update = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, query);
+        
+        let brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
+        brain += "\n\n### تحديث دوري من المستشار الأكبر:\n" + update;
+        localStorage.setItem(KEY_BRAIN, brain);
+        localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
+        updateStats();
+        alert("تم تحديث وحفظ عقل المستشار بنجاح من Gemini Pro!");
+      } catch (err) {
+        alert("فشل التحديث: " + err.message);
+      } finally {
+        btn.innerText = "تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄";
+        btn.disabled = false;
+      }
+    }
+
+    // Initial Load
+    window.onload = function() {
+      if (localStorage.getItem(KEY_API)) {
+        document.getElementById('api-key').value = localStorage.getItem(KEY_API);
+      }
+      if (!localStorage.getItem(KEY_BRAIN)) {
+        localStorage.setItem(KEY_BRAIN, DEFAULT_KNOWLEDGE);
+      }
+      updateStats();
+    };
+  </script>
+</body>
+</html>
