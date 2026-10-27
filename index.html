@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>مستشار العقارات الذكي | نظام الوكيل والمستشار</title>
+  <title>مستشار العقارات الذكي</title>
   <style>
     :root {
       --bg-dark: #0f172a;
@@ -13,19 +13,31 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
-      --warning: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     
-    /* ضبط الارتفاع ليتناسب مع شاشات الموبايل الحديثة */
-    html, body { 
-      background-color: var(--bg-dark); 
-      color: var(--text); 
-      height: 100vh;
-      height: 100dvh; 
-      display: flex; 
-      flex-direction: column; 
-      overflow: hidden; 
+    html, body {
+      background-color: #020617;
+      color: var(--text);
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* حاوية التطبيق تتكيف على الموبايل والكمبيوتر تلقائياً */
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      max-width: 800px; /* متناسق جداً على الكمبيوتر وبكامل الشاشة على الموبايل */
+      margin: 0 auto;
+      background-color: var(--bg-dark);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
     
     /* Header */
@@ -38,13 +50,13 @@
     .tab { flex: 1; text-align: center; padding: 10px 4px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; }
     .tab.active { color: #60a5fa; border-color: #60a5fa; font-weight: bold; }
 
-    /* Main Container */
-    .content { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; min-height: 0; }
+    /* Content Area */
+    .content { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; min-height: 0; }
     .tab-content { display: none; height: 100%; flex-direction: column; }
     .tab-content.active { display: flex; }
 
     /* Chat Section */
-    #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px; }
+    #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
     .msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .msg.user { background: var(--primary); align-self: flex-start; border-bottom-right-radius: 2px; }
     .msg.assistant { background: var(--card-bg); align-self: flex-end; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
@@ -52,16 +64,14 @@
     .source-cache { background: #374151; color: #9ca3af; }
     .source-pro { background: #581c87; color: #d8b4fe; }
 
-    /* Input Bar - تم رفعه وتأمينه ليكون ظاهراً فوق أزرار الموبايل */
+    /* Input Bar - يتكيف تلقائياً مع الشاشة بدون هوامش مبالغ فيها */
     .input-bar { 
       display: flex; 
       gap: 8px; 
-      padding: 10px 12px calc(35px + env(safe-area-inset-bottom, 20px)) 12px; 
+      padding: 10px 12px; 
       background: var(--card-bg); 
       border-top: 1px solid var(--border);
       flex-shrink: 0;
-      position: relative;
-      z-index: 50;
     }
     .input-bar textarea { 
       flex: 1; 
@@ -71,13 +81,15 @@
       padding: 10px 12px; 
       border-radius: 8px; 
       resize: none; 
-      height: 46px; 
+      height: 44px; 
       font-size: 0.95rem; 
+      outline: none;
     }
-    .btn { background: var(--primary); color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+    .input-bar textarea:focus { border-color: #60a5fa; }
+    .btn { background: var(--primary); color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; flex-shrink: 0; }
     .btn:disabled { opacity: 0.5; }
 
-    /* Settings & Data Storage UI */
+    /* UI Cards */
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
     .card h3 { font-size: 0.95rem; margin-bottom: 8px; color: #38bdf8; }
     .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
@@ -88,74 +100,89 @@
 </head>
 <body>
 
-  <header>
-    <h1>🏢 المساعد العقاري الخبير</h1>
-    <span id="sync-status" class="status-badge">العقل محدّث ✓</span>
-  </header>
+  <div id="app-container">
+    <header>
+      <h1>🏢 المساعد العقاري الخبير</h1>
+      <span id="sync-status" class="status-badge">العقل محدّث ✓</span>
+    </header>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('chat')">المستشار الذكي 💬</div>
-    <div class="tab" onclick="switchTab('data')">داتا الوحدات 📑</div>
-    <div class="tab" onclick="switchTab('brain')">عقل المعرفة 🧠</div>
-    <div class="tab" onclick="switchTab('settings')">الإعدادات ⚙️</div>
-  </div>
-
-  <div class="content">
-    <!-- Chat View -->
-    <div id="tab-chat" class="tab-content active">
-      <div id="chat-box">
-        <div class="msg assistant">مرحباً يا بطل! أنا جاهز لمساعدتك في استخراج الوحدات، الرد على أصعب العملاء، أو الإجابة على أي استشارة قانونية وعقارية في مصر.</div>
-      </div>
-      <div class="input-bar">
-        <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة عقارية/قانونية..."></textarea>
-        <button id="send-btn" class="btn" onclick="handleSend()">إرسال</button>
-      </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('chat')">المستشار الذكي 💬</div>
+      <div class="tab" onclick="switchTab('data')">داتا الوحدات 📑</div>
+      <div class="tab" onclick="switchTab('brain')">عقل المعرفة 🧠</div>
+      <div class="tab" onclick="switchTab('settings')">الإعدادات ⚙️</div>
     </div>
 
-    <!-- Listings Inventory View -->
-    <div id="tab-data" class="tab-content">
-      <div class="card">
-        <h3>تغذية داتا شات الواتساب (الإعلانات)</h3>
-        <p>ارفع ملفات الشات النصية أو الصق الرسائل هنا لتحديث قائمة شقق وفيلات التمليك والإيجار.</p>
-        <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
-        <textarea id="raw-data-input" rows="5" placeholder="أو الصق رسائل الواتساب هنا مباشرة..."></textarea>
-        <button class="btn success-btn" onclick="saveRawListings()">حفظ في قاعدة البيانات</button>
-        <button class="btn danger-btn" style="margin-top: 8px;" onclick="clearInventory()">مسح كل داتا الإعلانات الحالية 🗑️</button>
+    <div class="content">
+      <!-- Chat View -->
+      <div id="tab-chat" class="tab-content active">
+        <div id="chat-box">
+          <div class="msg assistant">مرحباً يا بطل! أنا جاهز لمساعدتك في استخراج الوحدات، الرد على أصعب العملاء، أو الإجابة على أي استشارة قانونية وعقارية في مصر.</div>
+        </div>
+        <div class="input-bar">
+          <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة..."></textarea>
+          <button id="send-btn" class="btn" onclick="handleSend()">إرسال</button>
+        </div>
       </div>
-      <div class="card">
-        <h3>حالة الوحدات المخزنة</h3>
-        <p id="inventory-stats">عدد الإعلانات المسجلة: 0 إعلان</p>
-      </div>
-    </div>
 
-    <!-- Core Knowledge (Mentor) View -->
-    <div id="tab-brain" class="tab-content">
-      <div class="card">
-        <h3>المعرفة العقارية الأساسية (تحديثات البرو)</h3>
-        <p>هنا يتم حفظ القوانين، الخرائط، أنظمة المطورين، وحلول الأسئلة المعقدة التي تعلمها من Gemini Pro.</p>
-        <button class="btn" onclick="syncKnowledgeWithPro()">تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄</button>
+      <!-- Listings Inventory View -->
+      <div id="tab-data" class="tab-content">
+        <div class="card">
+          <h3>تغذية داتا شات الواتساب (الإعلانات)</h3>
+          <p>ارفع ملفات الشات النصية أو الصق الرسائل هنا لتحديث قائمة شقق وفيلات التمليك والإيجار.</p>
+          <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
+          <textarea id="raw-data-input" rows="5" placeholder="أو الصق رسائل الواتساب هنا مباشرة..."></textarea>
+          <button class="btn success-btn" onclick="saveRawListings()">حفظ في قاعدة البيانات</button>
+          <button class="btn danger-btn" style="margin-top: 8px;" onclick="clearInventory()">مسح كل داتا الإعلانات الحالية 🗑️</button>
+        </div>
+        <div class="card">
+          <h3>حالة الوحدات المخزنة</h3>
+          <p id="inventory-stats">عدد الإعلانات المسجلة: 0 إعلان</p>
+        </div>
       </div>
-      <div class="card" style="flex: 1; overflow-y: auto;">
-        <h3>المعلومات المتراكمة في الذاكرة:</h3>
-        <div id="brain-preview" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">جاري تحميل المعرفة...</div>
-      </div>
-    </div>
 
-    <!-- Settings View -->
-    <div id="tab-settings" class="tab-content">
-      <div class="card">
-        <h3>مفتاح Google Gemini API المجاني</h3>
-        <p>المفتاح ده بيشغل النموذجين معاً (Flash السريع + Pro المستشار الأكبر) مجاناً من Google AI Studio.</p>
-        <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا...">
-        <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
+      <!-- Core Knowledge View -->
+      <div id="tab-brain" class="tab-content">
+        <div class="card">
+          <h3>المعرفة العقارية الأساسية (تحديثات البرو)</h3>
+          <p>هنا يتم حفظ القوانين، الخرائط، أنظمة المطورين، وحلول الأسئلة المعقدة التي تعلمها من Gemini Pro.</p>
+          <button class="btn" onclick="syncKnowledgeWithPro()">تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄</button>
+        </div>
+        <div class="card" style="flex: 1; overflow-y: auto;">
+          <h3>المعلومات المتراكمة في الذاكرة:</h3>
+          <div id="brain-preview" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">جاري تحميل المعرفة...</div>
+        </div>
       </div>
-      <div class="card">
-        <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. بياناتك وإعلاناتك لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل متصفحك مباشرة.</p>
+
+      <!-- Settings View -->
+      <div id="tab-settings" class="tab-content">
+        <div class="card">
+          <h3>مفتاح Google Gemini API المجاني</h3>
+          <p>المفتاح ده بيشغل النموذجين معاً (Flash السريع + Pro المستشار الأكبر) مجاناً من Google AI Studio.</p>
+          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا...">
+          <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
+        </div>
+        <div class="card">
+          <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. بياناتك وإعلاناتك لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل متصفحك مباشرة.</p>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // نظام التكيف الحيوي التلقائي مع شاشات الموبايل والكمبيوتر والكيبورد
+    function updateAdaptiveLayout() {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.getElementById('app-container').style.height = `${vh}px`;
+      const chatBox = document.getElementById('chat-box');
+      if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    window.addEventListener('resize', updateAdaptiveLayout);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateAdaptiveLayout);
+    }
+    window.addEventListener('orientationchange', updateAdaptiveLayout);
+
     const JUNIOR_SYSTEM_INSTRUCTION = `
 أنت مستشار عقاري مصري خبير من الطراز الأول في مدينتي، الرحاب، القاهرة الجديدة، العاصمة، وجميع أنحاء مصر.
 لديك مهمتان:
@@ -197,6 +224,7 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('tab-' + tabId).classList.add('active');
+      updateAdaptiveLayout();
     }
 
     function saveApiKey() {
@@ -300,6 +328,7 @@
       loadingDiv.className = 'msg assistant';
       loadingDiv.innerText = "جاري التحليل واستخراج الأنسب...";
       chatBox.appendChild(loadingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
         const brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
@@ -319,4 +348,70 @@ ${text}
 
         if (reply.includes("[NEED_PRO]")) {
           loadingDiv.innerText = "طلب عميق.. جاري استدعاء المستشار الأكبر (Gemini Pro) للتحليل والحفظ في الذاكرة 🧠...";
-          const proReply = await ca
+          const proReply = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, `السؤال التالي لم يكن متاحاً في المعرفة: ${text}. أجب إجابة قانونية وعقارية شاملة.`);
+          
+          let updatedBrain = brain + "\n- س: " + text + "\n- ج: " + proReply;
+          localStorage.setItem(KEY_BRAIN, updatedBrain);
+          updateStats();
+
+          loadingDiv.innerHTML = `<span class="source-tag source-pro">تم التفكير بواسطة Pro وتخزينه في العقل</span><br>` + proReply;
+        } else {
+          loadingDiv.innerHTML = `<span class="source-tag source-cache">المستشار السريع (قاعدة المعرفة + الداتا)</span><br>` + reply;
+        }
+
+      } catch (e) {
+        loadingDiv.innerText = "عذراً، حدث خطأ: " + e.message;
+      } finally {
+        document.getElementById('send-btn').disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function appendMsg(text, sender) {
+      const box = document.getElementById('chat-box');
+      const div = document.createElement('div');
+      div.className = `msg ${sender}`;
+      div.innerText = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function syncKnowledgeWithPro() {
+      const apiKey = localStorage.getItem(KEY_API);
+      if (!apiKey) return alert("سجل مفتاح الـ API أولاً من الإعدادات!");
+      
+      const btn = event.target;
+      btn.innerText = "جاري استشارة وتحديث المعرفة من Pro 🧠...";
+      btn.disabled = true;
+
+      try {
+        const query = "لخص أهم تحديثات حركة السوق العقاري المصري، القوة الشرائية الحالية، وأهم الفروق الإجرائية وتطبيقات الاستثمار المعتمدة بصيغة نقاط مركزة ودقيقة ليتم استخدامها كمرجع استشاري.";
+        const update = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, query);
+        
+        let brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
+        brain += "\n\n### تحديث دوري من المستشار الأكبر:\n" + update;
+        localStorage.setItem(KEY_BRAIN, brain);
+        localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
+        updateStats();
+        alert("تم تحديث وحفظ عقل المستشار بنجاح من Gemini Pro!");
+      } catch (err) {
+        alert("فشل التحديث: " + err.message);
+      } finally {
+        btn.innerText = "تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄";
+        btn.disabled = false;
+      }
+    }
+
+    window.onload = function() {
+      updateAdaptiveLayout();
+      if (localStorage.getItem(KEY_API)) {
+        document.getElementById('api-key').value = localStorage.getItem(KEY_API);
+      }
+      if (!localStorage.getItem(KEY_BRAIN)) {
+        localStorage.setItem(KEY_BRAIN, DEFAULT_KNOWLEDGE);
+      }
+      updateStats();
+    };
+  </script>
+</body>
+</html>
