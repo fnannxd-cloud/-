@@ -158,7 +158,7 @@
           <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح ⚡</button>
         </div>
         <div class="card">
-          <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. المفتاح والداتا لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل جهازك مباشرة.</p>
+          <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على جهازك. المفتاح والداتا لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل جهازك مباشرة.</p>
         </div>
       </div>
     </div>
@@ -188,6 +188,7 @@
    - حساب عدد الأيام منذ نشر الوحدة.
    - الترتيب: المطابق 100% ثم الأقرب مواصفات ثم الأقرب ميزانية.
 إذا سألك المستخدم سؤالاً استشارياً أو قانونياً، أجب حصراً من واقع "المعرفة العقارية المخزنة" المرفقة بالسياق. إذا لم تكن المعلومة متوفرة في المعرفة، قل: [NEED_PRO] ليتم استدعاء المستشار الأكبر فوراً وتخزين الإجابة للأبد.
+تاريخ اليوم المرجعي: 23 نوفمبر 2026.
 `;
 
     const PRO_SYSTEM_INSTRUCTION = `
@@ -275,32 +276,7 @@
       document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
     }
 
-    // دالة استكشاف أحدث النماذج المتاحة لمفتاح المستخدم تلقائياً
-    async function getAvailableModel(apiKey, preferPro = false) {
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        if (res.ok) {
-          const data = await res.json();
-          const valid = (data.models || []).filter(m => 
-            m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent")
-          );
-
-          if (valid.length > 0) {
-            if (preferPro) {
-              const p = valid.find(m => m.name.toLowerCase().includes("pro"));
-              if (p) return p.name.replace("models/", "");
-            }
-            const f = valid.find(m => m.name.toLowerCase().includes("flash"));
-            if (f) return f.name.replace("models/", "");
-            return valid[0].name.replace("models/", "");
-          }
-        }
-      } catch (e) {
-        console.warn("Could not list models:", e);
-      }
-      return preferPro ? "gemini-2.5-pro" : "gemini-2.5-flash";
-    }
-
+    // استدعاء النموذج المطلوب تلقائياً بناءً على توصية جوجل
     async function callGemini(type, systemInstruction, prompt) {
       const apiKey = localStorage.getItem(KEY_API);
       if (!apiKey) {
@@ -309,30 +285,53 @@
         throw new Error("لم يتم إدخال مفتاح الـ API");
       }
 
-      const activeModel = await getAvailableModel(apiKey, type === 'pro');
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`;
-      const payload = {
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: { temperature: 0.0 }
-      };
+      // النماذج النشطة المعتمدة في حسابك رسمياً
+      let modelsToTry = type === 'pro'
+        ? ['gemini-3.8-pro', 'gemini-3.5-pro', 'gemini-3.8-flash']
+        : ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash'];
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      let lastError = null;
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || `خطأ ${res.status}`);
+      for (let i = 0; i < modelsToTry.length; i++) {
+        const model = modelsToTry[i];
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const payload = {
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            generationConfig: { temperature: 0.0 }
+          };
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+              return { text: data.candidates[0].content.parts[0].text, modelName: model };
+            }
+          } else {
+            const err = await res.json();
+            const msg = err.error?.message || `خطأ ${res.status}`;
+            lastError = msg;
+
+            // لو جوجل اقترحت اسماً معيناً في نص الخطأ، الكود يستخرجه فوراً ويجربه
+            const match = msg.match(/use models\/(gemini-[\w.-]+)/i) || msg.match(/models\/(gemini-[\w.-]+)/i);
+            if (match && match[1] && !modelsToTry.includes(match[1])) {
+              modelsToTry.push(match[1]);
+            }
+            continue;
+          }
+        } catch (e) {
+          lastError = e.message;
+          continue;
+        }
       }
 
-      const data = await res.json();
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        return { text: data.candidates[0].content.parts[0].text, modelName: activeModel };
-      }
-      throw new Error("لم يتم استلام رد من النموذج");
+      throw new Error(lastError || "لم نتمكن من الوصول للنموذج، تأكد من صحة المفتاح.");
     }
 
     async function handleSend() {
@@ -405,7 +404,7 @@ ${text}
       btn.disabled = true;
       try {
         const res = await callGemini("flash", "أنت نظام فحص", "اكتب: المفتاح يعمل بنجاح");
-        alert(`تم الاتصال بنجاح! المفتاح يعمل ومربوط بالنموذج النشط بحسابك: (${res.modelName}) ✅`);
+        alert(`تم الاتصال بنجاح! المفتاح يعمل ومربوط بالنموذج المعتمد بحسابك: (${res.modelName}) ✅`);
       } catch(e) {
         alert("فشل الفحص: " + e.message);
       } finally {
