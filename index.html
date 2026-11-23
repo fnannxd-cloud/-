@@ -25,13 +25,12 @@
       overflow: hidden;
     }
 
-    /* حاوية التطبيق تتكيف على الموبايل والكمبيوتر تلقائياً */
     #app-container {
       display: flex;
       flex-direction: column;
       height: 100%;
       width: 100%;
-      max-width: 800px; /* متناسق جداً على الكمبيوتر وبكامل الشاشة على الموبايل */
+      max-width: 800px;
       margin: 0 auto;
       background-color: var(--bg-dark);
       border-left: 1px solid var(--border);
@@ -40,22 +39,18 @@
       overflow: hidden;
     }
     
-    /* Header */
     header { background: var(--card-bg); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
     header h1 { font-size: 1.05rem; color: #60a5fa; display: flex; align-items: center; gap: 8px; }
     .status-badge { font-size: 0.75rem; background: #065f46; color: #34d399; padding: 4px 8px; border-radius: 9999px; }
 
-    /* Tabs */
     .tabs { display: flex; background: var(--card-bg); border-bottom: 1px solid var(--border); flex-shrink: 0; }
     .tab { flex: 1; text-align: center; padding: 10px 4px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; }
     .tab.active { color: #60a5fa; border-color: #60a5fa; font-weight: bold; }
 
-    /* Content Area */
     .content { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; min-height: 0; }
     .tab-content { display: none; height: 100%; flex-direction: column; }
     .tab-content.active { display: flex; }
 
-    /* Chat Section */
     #chat-box { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
     .msg { max-width: 88%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .msg.user { background: var(--primary); align-self: flex-start; border-bottom-right-radius: 2px; }
@@ -64,7 +59,6 @@
     .source-cache { background: #374151; color: #9ca3af; }
     .source-pro { background: #581c87; color: #d8b4fe; }
 
-    /* Input Bar - يتكيف تلقائياً مع الشاشة بدون هوامش مبالغ فيها */
     .input-bar { 
       display: flex; 
       gap: 8px; 
@@ -89,13 +83,13 @@
     .btn { background: var(--primary); color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; flex-shrink: 0; }
     .btn:disabled { opacity: 0.5; }
 
-    /* UI Cards */
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 12px; }
     .card h3 { font-size: 0.95rem; margin-bottom: 8px; color: #38bdf8; }
     .card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
     .card input, .card textarea { width: 100%; background: #0f172a; border: 1px solid var(--border); color: var(--text); padding: 8px; border-radius: 6px; font-size: 0.85rem; margin-bottom: 8px; }
     .danger-btn { background: #dc2626; }
     .success-btn { background: var(--accent); }
+    .action-btn { background: #475569; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -158,19 +152,19 @@
       <div id="tab-settings" class="tab-content">
         <div class="card">
           <h3>مفتاح Google Gemini API المجاني</h3>
-          <p>المفتاح ده بيشغل النموذجين معاً (Flash السريع + Pro المستشار الأكبر) مجاناً من Google AI Studio.</p>
-          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا...">
+          <p>ضع المفتاح هنا مرة واحدة فقط، وسيتم حفظه محلياً على متصفحك بشكل آمن تماماً.</p>
+          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا (يبدأ بـ AIzaSy...)">
           <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
+          <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح ⚡</button>
         </div>
         <div class="card">
-          <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. بياناتك وإعلاناتك لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل متصفحك مباشرة.</p>
+          <p style="color: #cbd5e1;">📌 هذا التطبيق يعمل محلياً 100% على تليفونك. المفتاح والداتا لا تذهب لأي خادم وسيط إطلاقاً، وتُحفظ داخل جهازك مباشرة.</p>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // نظام التكيف الحيوي التلقائي مع شاشات الموبايل والكمبيوتر والكيبورد
     function updateAdaptiveLayout() {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.getElementById('app-container').style.height = `${vh}px`;
@@ -194,7 +188,6 @@
    - حساب عدد الأيام منذ نشر الوحدة.
    - الترتيب: المطابق 100% ثم الأقرب مواصفات ثم الأقرب ميزانية.
 إذا سألك المستخدم سؤالاً استشارياً أو قانونياً، أجب حصراً من واقع "المعرفة العقارية المخزنة" المرفقة بالسياق. إذا لم تكن المعلومة متوفرة في المعرفة، قل: [NEED_PRO] ليتم استدعاء المستشار الأكبر فوراً وتخزين الإجابة للأبد.
-تاريخ اليوم المرجعي: 27 أكتوبر 2026.
 `;
 
     const PRO_SYSTEM_INSTRUCTION = `
@@ -282,36 +275,61 @@
       document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
     }
 
-    async function callGemini(model, systemInstruction, prompt) {
+    // استدعاء ذكي يجرب النماذج النشطة في حسابك تلقائياً لمنع أي خطأ 404
+    async function callGemini(preferredType, systemInstruction, prompt) {
       const apiKey = localStorage.getItem(KEY_API);
       if (!apiKey) {
         alert("برجاء إدخال Gemini API Key في تبويب الإعدادات أولاً!");
         switchTab('settings');
-        throw new Error("No API Key");
+        throw new Error("لم يتم إدخال مفتاح الـ API");
       }
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const payload = {
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          temperature: 0.0
+      // قائمة النماذج حسب حداثتها وقوتها
+      const modelsToTry = preferredType === 'pro'
+        ? ['gemini-2.5-pro', 'gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
+        : ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash'];
+
+      let lastError = null;
+
+      for (const model of modelsToTry) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const payload = {
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            generationConfig: { temperature: 0.0 }
+          };
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+              return { text: data.candidates[0].content.parts[0].text, modelName: model };
+            }
+          } else {
+            const err = await res.json();
+            lastError = err.error?.message || `خطأ ${res.status}`;
+            // لو النموذج غير موجود بحسابك يجرب النموذج التالي فوراً
+            if (res.status === 404 || err.error?.code === 404) {
+              continue;
+            } else {
+              throw new Error(lastError);
+            }
+          }
+        } catch (e) {
+          if (e.message.includes("404") || e.message.includes("not found")) {
+            continue;
+          }
+          throw e;
         }
-      };
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || "خطأ في الاتصال بالنموذج");
       }
 
-      const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
+      throw new Error(lastError || "لم نتمكن من الوصول للنموذج، تأكد من صحة المفتاح.");
     }
 
     async function handleSend() {
@@ -344,19 +362,21 @@ ${inventory}
 [طلب العميل أو الاستفسار]:
 ${text}
 `;
-        let reply = await callGemini("gemini-1.5-flash", JUNIOR_SYSTEM_INSTRUCTION, fullPrompt);
+        let response = await callGemini("flash", JUNIOR_SYSTEM_INSTRUCTION, fullPrompt);
+        let reply = response.text;
 
         if (reply.includes("[NEED_PRO]")) {
-          loadingDiv.innerText = "طلب عميق.. جاري استدعاء المستشار الأكبر (Gemini Pro) للتحليل والحفظ في الذاكرة 🧠...";
-          const proReply = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, `السؤال التالي لم يكن متاحاً في المعرفة: ${text}. أجب إجابة قانونية وعقارية شاملة.`);
+          loadingDiv.innerText = "طلب عميق.. جاري استدعاء المستشار الأكبر (Pro) للتحليل والحفظ في الذاكرة 🧠...";
+          const proResponse = await callGemini("pro", PRO_SYSTEM_INSTRUCTION, `السؤال التالي لم يكن متاحاً في المعرفة: ${text}. أجب إجابة قانونية وعقارية شاملة.`);
+          const proReply = proResponse.text;
           
           let updatedBrain = brain + "\n- س: " + text + "\n- ج: " + proReply;
           localStorage.setItem(KEY_BRAIN, updatedBrain);
           updateStats();
 
-          loadingDiv.innerHTML = `<span class="source-tag source-pro">تم التفكير بواسطة Pro وتخزينه في العقل</span><br>` + proReply;
+          loadingDiv.innerHTML = `<span class="source-tag source-pro">تم التفكير بواسطة (${proResponse.modelName}) وتخزينه في العقل</span><br>` + proReply;
         } else {
-          loadingDiv.innerHTML = `<span class="source-tag source-cache">المستشار السريع (قاعدة المعرفة + الداتا)</span><br>` + reply;
+          loadingDiv.innerHTML = `<span class="source-tag source-cache">المستشار (${response.modelName})</span><br>` + reply;
         }
 
       } catch (e) {
@@ -376,6 +396,21 @@ ${text}
       box.scrollTop = box.scrollHeight;
     }
 
+    async function testApiKey() {
+      const btn = document.getElementById('test-key-btn');
+      btn.innerText = "جاري فحص المفتاح...";
+      btn.disabled = true;
+      try {
+        const res = await callGemini("flash", "أنت نظام فحص", "اكتب: المفتاح يعمل بنجاح");
+        alert(`تم الاتصال بنجاح! المفتاح يعمل ومربوط بالنموذج الأحدث: (${res.modelName}) ✅`);
+      } catch(e) {
+        alert("فشل الفحص: " + e.message);
+      } finally {
+        btn.innerText = "فحص اتصال المفتاح ⚡";
+        btn.disabled = false;
+      }
+    }
+
     async function syncKnowledgeWithPro() {
       const apiKey = localStorage.getItem(KEY_API);
       if (!apiKey) return alert("سجل مفتاح الـ API أولاً من الإعدادات!");
@@ -386,10 +421,10 @@ ${text}
 
       try {
         const query = "لخص أهم تحديثات حركة السوق العقاري المصري، القوة الشرائية الحالية، وأهم الفروق الإجرائية وتطبيقات الاستثمار المعتمدة بصيغة نقاط مركزة ودقيقة ليتم استخدامها كمرجع استشاري.";
-        const update = await callGemini("gemini-1.5-pro", PRO_SYSTEM_INSTRUCTION, query);
+        const updateRes = await callGemini("pro", PRO_SYSTEM_INSTRUCTION, query);
         
         let brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
-        brain += "\n\n### تحديث دوري من المستشار الأكبر:\n" + update;
+        brain += "\n\n### تحديث دوري من المستشار الأكبر:\n" + updateRes.text;
         localStorage.setItem(KEY_BRAIN, brain);
         localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
         updateStats();
