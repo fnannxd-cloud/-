@@ -94,7 +94,7 @@
   <div id="app-container">
     <header>
       <h1>🏢 المساعد العقاري الخبير</h1>
-      <span class="status-badge">الذكاء كامل 100% ⚡</span>
+      <span class="status-badge">الداتا كاملة 100% ⚡</span>
     </header>
 
     <div class="tabs">
@@ -108,7 +108,7 @@
       <!-- Chat View -->
       <div id="tab-chat" class="tab-content active">
         <div id="chat-box">
-          <div class="msg assistant">مرحباً يا بطل! الداتا كاملة 100% بدون حذف أي شقة أو فيلا ومربوطة بالذكاء الاصطناعي مباشرة. اسألني عن أي طلب أو استشارة.</div>
+          <div class="msg assistant">مرحباً بك! جميع الوحدات والإعلانات محفوظة بالكامل وتُرسل للذكاء الاصطناعي مباشرة دون استبعاد أي إعلان. اطلب أي طلب وسأقوم بفرزه فوراً بكل الشروط.</div>
         </div>
         <div class="input-bar">
           <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة..."></textarea>
@@ -119,10 +119,10 @@
       <!-- Listings Inventory View -->
       <div id="tab-data" class="tab-content">
         <div class="card">
-          <h3>تغذية داتا شات الواتساب (الإعلانات كاملة بدون مسح)</h3>
-          <p>ارفع ملفات الواتساب. يتم استبدال الداتا تلقائياً لمنع التكرار مع الحفاظ على كل إعلان بنسبة 100% وإزالة سطور الصور فقط.</p>
+          <h3>تغذية داتا شات الواتساب (تحديث نظيف وشامل)</h3>
+          <p>ارفع ملفات الواتساب هنا. يتم إزالة سطور مخلفات الصور تلقائياً مع الاحتفاظ بـ 100% من كل إعلان وتفصيلة وكود ورقم مالك.</p>
           <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
-          <textarea id="raw-data-input" rows="5" placeholder="أو الصق رسائل الواتساب هنا مباشرة..."></textarea>
+          <textarea id="raw-data-input" rows="5" placeholder="أو الصق نصوص الإعلانات هنا مباشرة..."></textarea>
           <button class="btn success-btn" onclick="saveRawListings()">حفظ وتحديث قاعدة البيانات</button>
           <button class="btn danger-btn" style="margin-top: 8px;" onclick="clearInventory()">مسح كل داتا الإعلانات الحالية 🗑️</button>
         </div>
@@ -149,8 +149,8 @@
       <div id="tab-settings" class="tab-content">
         <div class="card">
           <h3>مفتاح Google Gemini API</h3>
-          <p>المفتاح محفوظ محلياً على جهازك بشكل آمن تماماً.</p>
-          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا">
+          <p>ضع المفتاح هنا. يمكنك وضع أكثر من مفتاح (افصل بينهم بفاصلة ,) لمضاعفة الكوتة والسرعة تلقائياً.</p>
+          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا (أو عدة مفاتيح مفصولة بفاصلة)">
           <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
           <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح ⚡</button>
         </div>
@@ -168,29 +168,19 @@
     window.addEventListener('resize', updateAdaptiveLayout);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', updateAdaptiveLayout);
 
-    // التعليمات الكاملة والصارمة وفق كل شروطك
     const SYSTEM_INSTRUCTION = `
-أنت مستشار عقاري مصري خبير ومسوق محترف في مدينتي، الرحاب، القاهرة الجديدة، العاصمة، والشروق.
-لديك وصول كامل لكل إعلانات الوحدات المرفقة في السياق، ومهمتك استخراج أنسب الوحدات لطلب العميل بدقة 100% وفق الشروط الصارمة التالية:
+أنت مستشار عقاري مصري خبير ووسيط محترف في مدينتي، الرحاب، القاهرة الجديدة، العاصمة، والشروق.
+أمامك في السياق قاعدة بيانات الإعلانات كاملة بنسبة 100% دون أي حذف. مهمتك فحصها واستخراج أفضل الوحدات المطابقة لطلب العميل وفق القواعد التالية بحزم:
 
-1. شروط الإيجار:
-   - استبعد تماماً أي وحدة إيجار تم نشرها منذ أكثر من 25 يوماً من تاريخ اليوم المرجعي (24 نوفمبر 2026).
-   - إذا كان الإعلان ينص على أن "العمولة من المستأجر"، اكتب تحذيراً بارزاً: (⚠️ تنبيه: لازم مستأجر مباشر).
+1. في الإيجار: استبعد تماماً وتجاهل أي إعلان مر على تاريخ نشره أكثر من 25 يوماً من تاريخ اليوم (25 نوفمبر 2026).
+2. إذا كان إعلان الإيجار ينص على أن "العمولة من المستأجر"، اكتب فوراً وبلون مميز: (⚠️ تنبيه: لازم مستأجر مباشر).
+3. في التمليك: اعرض كل الوحدات المطابقة حتى لو كانت قديمة (لا تطبق شرط الـ 25 يوماً على التمليك).
+4. اذكر كود الوحدة المكتوب فيها (مثل M... أو Ms...)، وإن لم يوجد كود، ضع كوداً مخصصاً مميزاً مثل [كود-تمليك-B6-مج65].
+5. احسب واذكر كم يوماً مضى على نشر الإعلان (مثال: معروضة منذ 4 أيام).
+6. رتب النتائج: المتطابق 100% في المواصفات والميزانية أولاً، ثم الأقرب مواصفات، ثم الأقرب ميزانية.
+7. أجب على أي استفسارات قانونية أو عن الخرائط والمراحل والشركات بدقة تامة.
 
-2. شروط التمليك:
-   - وحدات التمليك لا تطبق عليها مهلة الـ 25 يوماً (أظهر كل ما يطابق الطلب حتى لو قديم).
-
-3. الأكواد وحساب الوقت:
-   - اذكر كود الوحدة الأصلي المكتوب فيها (مثل M120 أو Ms1482). وإن كانت الوحدة بدون كود، اصنع لها كوداً مخصصاً مميزاً مثل [كود-تمليك-B6-مج65].
-   - احسب واذكر كم يوماً مضى على نشر الإعلان (مثال: نازلة من 4 أيام).
-
-4. الترتيب:
-   - رتب النتائج: المتطابق 100% في المواصفات والميزانية أولاً، ثم الأقرب في المواصفات، ثم الأقرب في الميزانية.
-
-5. الإجابة على الاستشارات والقوانين:
-   - أجب بدقة وخبرة عن أي سؤال يخص تقسيمات المراحل (مثل: مجموعة 121 تابعة لـ B12)، وإجراءات التنازل في طلعت مصطفى مقابل التخصيص في الجهاز، وشروط الوديعة والنادي.
-
-تاريخ اليوم المرجعي: 24 نوفمبر 2026.
+تاريخ اليوم المرجعي: 25 نوفمبر 2026.
 `;
 
     const KEY_API = "re_api_key";
@@ -204,14 +194,27 @@
 - الفرق القانوني: عقود طلعت مصطفى يتم التنازل عنها داخل مقر الشركة بموجب استيفاء الشيكات وبراءة الذمة ورسوم التنازل. التخصيص (شرطة، هيئة مجتمعات، بنك إسكان) يتم التنازل عنه داخل جهاز المدينة بتوكيل رسمي وإذن توريد وتصرفات عقارية وعضوية النادي اختيارية.
 `;
 
-    // تنظيف شوائب صور الواتساب فقط مع الحفاظ على 100% من كل إعلان وشقة وتفصيلة ورقم مالك
-    function cleanOnlyMediaJunk(text) {
-      return text
-        .replace(/^.*<تم استبعاد الوسائط>.*$/gm, '')
-        .replace(/^.*الرسائل والمكالمات مشفرة تمامًا بين الطرفين.*$/gm, '')
-        .replace(/^.*\.vcf \(الملف مرفق\).*$/gm, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
+    // تنظيف فوري ومضمون لسطور صور الواتساب والشوائب فقط دون حذف أي كلمة من أي إعلان
+    function cleanWhatsAppJunk(raw) {
+      if (!raw) return "";
+      const lines = raw.split(/\r?\n/);
+      const keep = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // إزالة سطور الصور المحذوفة في الواتساب
+        if (line.includes("استبعاد الوسائط")) continue;
+        if (line.includes("الرسائل والمكالمات مشفرة")) continue;
+        if (line.includes("تم حذف هذه الرسالة")) continue;
+        if (line.includes(".vcf") && line.includes("الملف مرفق")) continue;
+        if (line.includes("أنشأ مجموعة")) continue;
+        // إزالة رسائل دخول وخروج الأعضاء مع استثناء سطور الإعلانات
+        if ((line.includes(" أضاف ") || line.includes(" أزال ") || line.includes(" غادر ") || line.includes(" انضم ")) && 
+            !line.includes("مساح") && !line.includes("غرف") && !line.includes("مطلوب") && !line.includes("شقة") && !line.includes("فيلا")) {
+          continue;
+        }
+        keep.push(line);
+      }
+      return keep.join("\n").replace(/\n{3,}/g, "\n\n").trim();
     }
 
     function switchTab(tabId) {
@@ -233,16 +236,16 @@
     function saveRawListings() {
       const text = document.getElementById('raw-data-input').value.trim();
       if (!text) return;
-      let cleaned = cleanOnlyMediaJunk(text);
+      let cleaned = cleanWhatsAppJunk(text);
       let existing = localStorage.getItem(KEY_INVENTORY) || "";
       existing += "\n\n" + cleaned;
-      localStorage.setItem(KEY_INVENTORY, existing);
+      localStorage.setItem(KEY_INVENTORY, existing.trim());
       document.getElementById('raw-data-input').value = "";
       updateStats();
-      alert("تمت إضافة البيانات وحفظ كل الإعلانات بنجاح!");
+      alert("تمت إضافة البيانات بنجاح مع الحفاظ على كل الإعلانات!");
     }
 
-    // رفع واستبدال نظيف لمنع تكرار الملفات ومضاعفة الحجم
+    // رفع واستبدال نظيف بدون تكرار
     function handleFileUpload(e) {
       const files = e.target.files;
       if (!files || files.length === 0) return;
@@ -253,13 +256,13 @@
       for (let i = 0; i < files.length; i++) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          combined += "\n\n" + cleanOnlyMediaJunk(evt.target.result);
+          combined += "\n\n" + cleanWhatsAppJunk(evt.target.result);
           readCount++;
           if (readCount === files.length) {
-            // حفظ الداتا بالكامل دون حذف أي إعلان تمليك أو إيجار
+            // حفظ الداتا بالكامل واستبدال القديم لمنع تضاعف الحجم
             localStorage.setItem(KEY_INVENTORY, combined.trim());
             updateStats();
-            alert(`تم رفع وتحديث ${files.length} ملفات بالكامل بدون تكرار وبحفظ 100% من الإعلانات!`);
+            alert(`تم رفع وتنظيف ${files.length} ملفات وحفظ كافة الإعلانات 100% بنجاح!`);
           }
         };
         reader.readAsText(files[i]);
@@ -277,41 +280,69 @@
     function updateStats() {
       const inv = localStorage.getItem(KEY_INVENTORY) || "";
       const count = (inv.match(/المطلوب|كود|Ms\d+|M\d+/gi) || []).length;
-      document.getElementById('inventory-stats').innerText = `حجم الداتا الصافية: ${Math.round(inv.length / 1024)} كيلوبايت (~ ${count} إعلان كامل محفوظ بدون حذف)`;
+      document.getElementById('inventory-stats').innerText = `حجم الداتا الصافية: ${Math.round(inv.length / 1024)} كيلوبايت (~ ${count} إعلان كامل محفوظ)`;
       document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
     }
 
-    // استدعاء مباشر وفوري بنموذج gemini-3.6-flash النشط في حسابك
-    async function callGeminiDirect(prompt) {
-      const apiKey = localStorage.getItem(KEY_API);
-      if (!apiKey) {
+    // استدعاء ذكي يدعم تدوير المفاتيح وإعادة المحاولة التلقائية عند ضغط الدقيقة
+    async function callGeminiDirect(prompt, retryCount = 0) {
+      const rawKeys = localStorage.getItem(KEY_API);
+      if (!rawKeys) {
         alert("برجاء إدخال Gemini API Key في تبويب الإعدادات أولاً!");
         switchTab('settings');
         throw new Error("لم يتم إدخال مفتاح الـ API");
       }
 
-      // الاتصال المباشر بنموذج حسابك لضمان أعلى سرعة (ثانية واحدة)
+      // دعم عدة مفاتيح
+      const keys = rawKeys.split(/[,;\n]/).map(k => k.trim()).filter(Boolean);
+      const currentKey = keys[retryCount % keys.length];
+
       const model = "gemini-3.6-flash";
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${currentKey}`;
       const payload = {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
         generationConfig: { temperature: 0.1 }
       };
 
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-      if (!res.ok) {
+        if (res.ok) {
+          const data = await res.json();
+          return data.candidates[0].content.parts[0].text;
+        }
+
         const err = await res.json();
-        throw new Error(err.error?.message || `خطأ ${res.status}`);
-      }
+        const msg = err.error?.message || `خطأ ${res.status}`;
 
-      const data = await res.json();
-      return data.candidates[0].content.parts[0].text;
+        // في حال الوصول لحد الدقيقة، التبديل لمفتاح آخر أو الانتظار التلقائي
+        if (res.status === 429 || msg.includes("Quota exceeded") || msg.includes("RESOURCE_EXHAUSTED")) {
+          if (keys.length > 1 && retryCount < keys.length) {
+            console.log("التبديل إلى المفتاح التالي لتفادي ضغط الدقيقة...");
+            return await callGeminiDirect(prompt, retryCount + 1);
+          } else if (retryCount < 2) {
+            const chatBox = document.getElementById('chat-box');
+            const waitDiv = document.createElement('div');
+            waitDiv.className = 'msg assistant';
+            waitDiv.innerText = "⏳ تم الوصول لحد الدقيقة المجاني لجوجل.. جاري الانتظار 15 ثانية وإعادة المحاولة تلقائياً...";
+            chatBox.appendChild(waitDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            await new Promise(r => setTimeout(r, 16000));
+            waitDiv.remove();
+            return await callGeminiDirect(prompt, retryCount + 1);
+          }
+        }
+
+        throw new Error(msg);
+      } catch (err) {
+        throw err;
+      }
     }
 
     async function handleSend() {
@@ -326,23 +357,23 @@
       const chatBox = document.getElementById('chat-box');
       const loadingDiv = document.createElement('div');
       loadingDiv.className = 'msg assistant';
-      loadingDiv.innerText = "جاري قراءة كامل الداتا واستخراج طلبك بالمللي ⚡...";
+      loadingDiv.innerText = "جاري فحص كامل الداتا واستخراج طلبك بدقة ⚡...";
       chatBox.appendChild(loadingDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
         const brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
-        const inventory = localStorage.getItem(KEY_INVENTORY) || "لا توجد إعلانات مرفوعة بعد.";
+        const inventory = localStorage.getItem(KEY_INVENTORY) || "لا توجد إعلانات مرفوعة.";
 
-        // إرسال كامل الداتا 100% دون أن يحذف كود الجافاسكريبت أي إعلان
+        // إرسال كامل الداتا 100% دفعة واحدة للنموذج
         const fullPrompt = `
-[المعرفة العقارية والقوانين]:
+[المعرفة العقارية الاستشارية والقوانين]:
 ${brain}
 
-[داتا إعلانات الوحدات كاملة 100% بدون أي حذف]:
+[داتا الوحدات المعروضة كاملة 100%]:
 ${inventory}
 
-[طلب العميل أو الاستفسار]:
+[طلب العميل أو السؤال]:
 ${text}
 `;
         const reply = await callGeminiDirect(fullPrompt);
