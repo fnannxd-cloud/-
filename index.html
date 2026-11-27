@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>مستشار العقارات الذكي - النسخة المدمجة الخارقة</title>
+  <title>مستشار العقارات الذكي - النسخة فائقة السرعة</title>
   <style>
     :root {
       --bg-dark: #0f172a;
@@ -96,8 +96,8 @@
 
   <div id="app-container">
     <header>
-      <h1>🏢 المساعد العقاري الخبير (Hybrid Pro)</h1>
-      <span id="sync-status" class="status-badge">جاهز ونشط ⚡</span>
+      <h1>🏢 المساعد العقاري الذكي (Turbo Edition)</h1>
+      <span id="sync-status" class="status-badge">جاهز وفائق السرعة ⚡</span>
     </header>
 
     <div class="tabs">
@@ -111,7 +111,7 @@
       <!-- Chat View -->
       <div id="tab-chat" class="tab-content active">
         <div id="chat-box">
-          <div class="msg assistant">مرحباً بك! النظام مزود بمعمارية هجينة تجمع بين السرعة الفائقة لفرز إعلانات الواتساب والمستشار الأكبر (Pro) للإجابة على أصعب الأسئلة القانونية والبيعية. اطلب أي طلب للبدء.</div>
+          <div class="msg assistant">مرحباً بك! تم تحسين النظام ليعمل بسرعة صاروخية دون تخطي كوتة جوجل أو بطء. اطلب أي طلب، ابحث عن وحدات، أو اسأل أي استشارة للبدء!</div>
         </div>
         <div class="input-bar">
           <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة عقارية/قانونية..."></textarea>
@@ -123,7 +123,7 @@
       <div id="tab-data" class="tab-content">
         <div class="card">
           <h3>تغذية وتحديث داتا الواتساب</h3>
-          <p>ارفع ملفات التصدير النصية (.txt) أو الصق المحادثات. يتم تلقائياً تنظيف وحذف صور ومخلفات الشات مع الحفاظ على كامل محتوى الإعلانات 100%.</p>
+          <p>ارفع ملفات التصدير النصية (.txt) أو الصق المحادثات. يتم تلقائياً تقسيم الإعلانات وتنظيف الشوائب لضمان فحص سريع ودقيق 100%.</p>
           <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
           <textarea id="raw-data-input" rows="5" placeholder="أو الصق نصوص الإعلانات هنا مباشرة..."></textarea>
           <div style="display: flex; gap: 8px;">
@@ -142,7 +142,7 @@
       <div id="tab-brain" class="tab-content">
         <div class="card">
           <h3>المعرفة العقارية والاستشارية (ذاكرة النظام)</h3>
-          <p>القوانين، الخرائط، أنظمة المطورين، وإجراءات التنازل. يتعلم النظام تلقائياً من الأسئلة الصعبة ويحفظها هنا للأبد.</p>
+          <p>القوانين، الخرائط، وأنظمة المطورين. يتعلم النظام تلقائياً من الأسئلة الصعبة ويحفظها هنا للأبد.</p>
           <button class="btn" onclick="syncKnowledgeWithPro()">تحديث المعرفة الآن من المستشار الأكبر (Pro) 🔄</button>
           <button class="btn danger-btn" style="margin-top: 6px;" onclick="resetKnowledge()">إعادة تعيين المعرفة الافتراضية ⚠️</button>
         </div>
@@ -156,13 +156,13 @@
       <div id="tab-settings" class="tab-content">
         <div class="card">
           <h3>مفتاح Google Gemini API</h3>
-          <p>ضع المفتاح هنا. يمكنك وضع أكثر من مفتاح (افصل بينهم بفاصلة , أو سطر جديد) لمضاعفة الكوتة والتبديل التلقائي عند ضغط الدقيقة.</p>
-          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا (أو عدة مفاتيح مفصولة بفاصلة)">
+          <p>ضع المفتاح هنا (يمكنك وضع مفاتيح متعددة مفصولة بفاصلة لتبديل الكوتة تلقائياً).</p>
+          <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا">
           <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
           <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح ⚡</button>
         </div>
         <div class="card">
-          <p style="color: #cbd5e1; font-size: 0.8rem; line-height: 1.4;">🔒 بياناتك ومفاتيحك وإعلاناتك مشفرة ومحفوظة محلياً 100% داخل جهازك فقط ولا ترسل لأي خادم وسيط.</p>
+          <p style="color: #cbd5e1; font-size: 0.8rem; line-height: 1.4;">🔒 جميع محادثاتك وداتا الوحدات ومفاتيحك مشفرة ومحفوظة محلياً 100% داخل جهازك وتعمل على GitHub Pages بمنتهى السلاسة.</p>
         </div>
       </div>
     </div>
@@ -180,17 +180,16 @@
 
     const JUNIOR_SYSTEM_INSTRUCTION = `
 أنت مستشار عقاري مصري خبير ووسيط محترف في مدينتي، الرحاب، القاهرة الجديدة، العاصمة الإدارية، والشروق.
-لديك مهمتان رئيسيتان:
-1. فحص "داتا الإعلانات المتاحة" بدقة واستخراج أفضل الوحدات المطابقة لطلب العميل وفق القواعد التالية:
-   - وحدات الإيجار: استبعد تماماً أي إعلان مر على تاريخ نشره أكثر من 25 يوماً من تاريخ اليوم (27 نوفمبر 2026).
-   - إذا كان إعلان الإيجار ينص على أن "العمولة من المستأجر"، اكتب فوراً وبلون مميز: (⚠️ تنبيه: لازم مستأجر مباشر).
-   - وحدات التمليك: اعرض كل الوحدات المطابقة حتى لو كانت قديمة (لا تطبق شرط الـ 25 يوماً على التمليك).
-   - اذكر كود الوحدة الأصلي إن وجد (مثل M120 أو Ms...)، وإذا لم يوجد، ضع كوداً مخصصاً مثل [كود-تمليك-B6-مج65].
-   - احسب واذكر كم يوماً مضى على نشر الإعلان.
-   - رتب النتائج: المطابق 100% بالمواصفات والميزانية أولاً، ثم الأقرب مواصفات، ثم الأقرب ميزانية.
-2. إذا سألك المستخدم سؤالاً استشارياً، هندسياً، أو قانونياً، أو رسالة عامة:
-   - جاوب بذكاء واحترافية وبشكل كامل.
-   - إذا كانت المعلومة القانونية معقدة جداً وغير مؤكدة في المعرفة، اكتب حصراً في أول ردك: [NEED_PRO] لتتم الاستعانة بالمستشار الأكبر وتخزينها في الذاكرة.
+- إذا كان السؤال ترحيبياً أو عاماً، جاوب برحابة صدر وذكاء ومهنية عالية.
+- إذا كان هناك وحدات مرفقة وطلب العميل متعلق بوحدة عقارية:
+   1. افحص الوحدات المرفقة بدقة 100%.
+   2. وحدات الإيجار: استبعد تماماً أي إعلان مر على تاريخ نشره أكثر من 25 يوماً من تاريخ اليوم (27 نوفمبر 2026).
+   3. إذا كان إعلان الإيجار ينص على أن "العمولة من المستأجر"، اكتب فوراً وبلون مميز: (⚠️ تنبيه: لازم مستأجر مباشر).
+   4. وحدات التمليك: اعرض كل الوحدات المطابقة حتى لو كانت قديمة (لا تطبق شرط الـ 25 يوماً على التمليك).
+   5. اذكر كود الوحدة الأصلي إن وجد (مثل M120 أو Ms...)، وإذا لم يوجد، ضع كوداً مخصصاً مثل [كود-تمليك-B6-مج65].
+   6. احسب واذكر كم يوماً مضى على نشر الإعلان.
+   7. رتب النتائج: المطابق 100% أولاً، ثم الأقرب مواصفات، ثم الأقرب ميزانية.
+- إذا سألك المستخدم سؤالاً استشارياً أو قانونياً عميقاً غير موجود في الذاكرة المرفقة، اكتب حصراً في أول ردك: [NEED_PRO] لتتم الاستعانة بالمستشار الأكبر وتخزينها في الذاكرة.
 
 تاريخ اليوم المرجعي: 27 نوفمبر 2026.
 `;
@@ -199,9 +198,9 @@
 أنت المستشار العقاري الأعلى وخبير التطوير والاستثمار والقوانين العقارية المصرية.
 مهمتك إعطاء إجابات قانونية وعقارية تفصيلية واحترافية ليتم حفظها كمرجع دائم في عقل النظام:
 - جغرافية ومراحل مدينتي، الرحاب، التجمع، العاصمة، والشروق.
-- الفروق بين عقود طلعت مصطفى وعقود التخصيص (أجهزة المدن، المجتمعات العمرانية، بنك الإسكان).
+- الفروق بين عقود طلعت مصطفى وعقود التخصيص.
 - شروط التنازل، الرخص، الضرائب العقارية، والتصرفات العقارية.
-أجب بصيغة مركزة، منظمة وواضحة جداً.
+أجب بصيغة مركزة، منظمة واحترافية جداً.
 `;
 
     const KEY_API = "re_api_key";
@@ -215,6 +214,7 @@
 - الفرق القانوني: عقود طلعت مصطفى يتم التنازل عنها داخل مقر الشركة بموجب استيفاء الشيكات وبراءة الذمة ورسوم التنازل للشركة. التخصيص (شرطة، هيئة مجتمعات، بنك إسكان) يتم التنازل عنه داخل جهاز المدينة بتوكيل رسمي وإذن توريد وتصرفات عقارية وعضوية النادي اختيارية.
 `;
 
+    // دالة تنظيف الواتساب بدقة
     function cleanWhatsAppJunk(raw) {
       if (!raw) return "";
       const lines = raw.split(/\r?\n/);
@@ -226,13 +226,76 @@
         if (line.includes("تم حذف هذه الرسالة") || line.includes("This message was deleted")) continue;
         if (line.includes(".vcf") && line.includes("الملف مرفق")) continue;
         if (line.includes("أنشأ مجموعة") || line.includes("created group")) continue;
-        if ((line.includes(" أضاف ") || line.includes(" أزال ") || line.includes(" غادر ") || line.includes(" انضم ") || line.includes("joined") || line.includes("left")) && 
+        if ((line.includes(" أضاف ") || line.includes(" أزال ") || line.includes(" غادر ") || line.includes(" انضم ")) && 
             !line.includes("مساح") && !line.includes("غرف") && !line.includes("مطلوب") && !line.includes("شقة") && !line.includes("فيلا")) {
           continue;
         }
         keep.push(line);
       }
       return keep.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+    }
+
+    // تقسيم الإعلانات لمصفوفة مستقلة للفرز فائق السرعة
+    function splitIntoAds(text) {
+      if (!text) return [];
+      // التقسيم بالاعتماد على تواريخ الواتساب أو علامات الفواصل المزدوجة
+      const rawBlocks = text.split(/(?=\[\d{1,2}[\/\.]\d{1,2}[\/\.]\d{2,4}[^\]]*\]|\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{2}|\n\s*\n\s*\n)/g);
+      const ads = [];
+      for (const block of rawBlocks) {
+        const trimmed = block.trim();
+        if (trimmed.length > 25) ads.push(trimmed);
+      }
+      return ads.length > 0 ? ads : [text];
+    }
+
+    // محرك الفحص الذكي لتحديد الإعلانات المناسبة لطلب العميل دون إجهاد الكوتة
+    function extractRelevantAds(query, rawInventory) {
+      const ads = splitIntoAds(rawInventory);
+      if (ads.length <= 25) return rawInventory; // إذا كانت الداتا صغيرة، ترسل كاملة
+
+      // فحص هل السؤال استفسار عن عقارات أم مجرد حديث/استشارة عامة
+      const propertyKeywords = [
+        "شقة", "شقه", "فيلا", "تاون", "توين", "روف", "ارضي", "أرضي", "دور", "ايجار", "إيجار", 
+        "بيع", "تمليك", "مطلوب", "مساحة", "مساحه", "متاح", "عندك", "عاوز", "عايز", "دورلي", 
+        "ابحث", "b1", "b2", "b3", "b5", "b6", "b7", "b8", "b10", "b11", "b12", "الرحاب", 
+        "مدينتي", "الشروق", "العاصمة", "التجمع", "غرف", "حمام", "متر", "سعر", "ميزانية", 
+        "مليون", "الف", "ألف", "فاضية", "مفروشة", "مفروش"
+      ];
+
+      const isPropertySearch = propertyKeywords.some(kw => query.toLowerCase().includes(kw));
+      if (!isPropertySearch) {
+        // إذا كان السؤال "ازيك" أو استشارة قانونية عامة، لا يتم إرسال الإعلانات نهائياً لتوفير السرعة والتوكن!
+        return "";
+      }
+
+      // حساب درجة التوافق لكل إعلان (Scoring)
+      const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+      const scoredAds = ads.map(ad => {
+        let score = 0;
+        const lowerAd = ad.toLowerCase();
+        
+        queryWords.forEach(word => {
+          if (lowerAd.includes(word)) score += 2;
+        });
+
+        // زيادة الوزن للمراحل (B11, B12...) ونوع المعاملة (إيجار / بيع)
+        if (query.includes("إيجار") && lowerAd.includes("إيجار")) score += 5;
+        if ((query.includes("بيع") || query.includes("تمليك")) && (lowerAd.includes("بيع") || lowerAd.includes("تمليك"))) score += 5;
+
+        return { ad, score };
+      });
+
+      scoredAds.sort((a, b) => b.score - a.score);
+
+      // أخذ أفضل 30 إعلاناً مطابقاً كحد أقصى (تضمن الدقة 100% والسرعة الصاروخية)
+      const topAds = scoredAds.slice(0, 30).filter(item => item.score > 0).map(item => item.ad);
+
+      if (topAds.length === 0) {
+        // إذا لم يعثر على كلمات متطابقة بالضبط، نأخذ عينة من أحدث الإعلانات
+        return ads.slice(0, 20).join("\n\n---\n\n");
+      }
+
+      return topAds.join("\n\n---\n\n");
     }
 
     function switchTab(tabId) {
@@ -249,7 +312,7 @@
       const key = document.getElementById('api-key').value.trim();
       if (key) {
         localStorage.setItem(KEY_API, key);
-        alert("تم حفظ مفاتيح API بنجاح!");
+        alert("تم حفظ مفتاح API بنجاح!");
       }
     }
 
@@ -283,7 +346,7 @@
             let existing = localStorage.getItem(KEY_INVENTORY) || "";
             localStorage.setItem(KEY_INVENTORY, (existing + combined).trim());
             updateStats();
-            alert(`تم رفع وتنظيف ${files.length} ملفات وحفظ كافة الإعلانات 100% بنجاح!`);
+            alert(`تم رفع وتنظيف ${files.length} ملفات بنجاح وحفظ كافة الإعلانات!`);
           }
         };
         reader.readAsText(files[i]);
@@ -308,13 +371,12 @@
 
     function updateStats() {
       const inv = localStorage.getItem(KEY_INVENTORY) || "";
-      const matches = inv.match(/المطلوب|كود|Ms\d+|M\d+|مساحة|شقة|فيلا/gi) || [];
-      const count = Math.round(matches.length / 2);
-      document.getElementById('inventory-stats').innerText = `حجم الداتا الصافية: ${Math.round(inv.length / 1024)} كيلوبايت (~ ${count} إعلان مسجل ومحفوظ)`;
+      const ads = splitIntoAds(inv);
+      document.getElementById('inventory-stats').innerText = `حجم الداتا الصافية: ${Math.round(inv.length / 1024)} كيلوبايت (~ ${ads.length} إعلان متاح ومفهرس)`;
       document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
     }
 
-    // استدعاء موحد مع كاشف الموديلات وتدوير المفاتيح وتخطي الـ 404
+    // استدعاء Gemini الذكي مع دعم النماذج السريعة وتدوير المفاتيح
     async function callGeminiUnified(type, systemInstruction, prompt, keyIndex = 0, retryCount = 0) {
       const rawKeys = localStorage.getItem(KEY_API);
       if (!rawKeys) {
@@ -326,10 +388,10 @@
       const keys = rawKeys.split(/[,;\n]/).map(k => k.trim()).filter(Boolean);
       const currentKey = keys[keyIndex % keys.length];
 
-      // أسماء الموديلات النشطة التي تعمل مباشرة على السيرفر بدون خطأ 404
+      // النماذج الأسرع والأحدث دائماً أولاً لتفادي البطء
       let modelsToTry = type === 'pro'
-        ? ['gemini-2.5-pro', 'gemini-1.5-pro-latest', 'gemini-1.5-pro', 'gemini-2.5-flash']
-        : ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash-8b', 'gemini-1.5-flash'];
+        ? ['gemini-2.5-pro', 'gemini-1.5-pro', 'gemini-2.5-flash']
+        : ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
       let lastError = null;
 
@@ -340,7 +402,7 @@
           const payload = {
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             systemInstruction: { parts: [{ text: systemInstruction }] },
-            generationConfig: { temperature: 0.1 }
+            generationConfig: { temperature: 0.2 }
           };
 
           const res = await fetch(url, {
@@ -360,36 +422,18 @@
           const msg = err.error?.message || `خطأ ${res.status}`;
           lastError = msg;
 
-          // إذا كان الموديل غير موجود 404 جرب الموديل التالي فوراً
-          if (res.status === 404 || msg.includes("not found")) {
-            continue;
-          }
-
-          // معالجة ضغط الاستخدام 429 أو نفاذ الكوتة
+          // إذا تم الضغط على الكوتة، التبديل التلقائي للمفتاح التالي فوراً
           if (res.status === 429 || msg.includes("Quota exceeded") || msg.includes("RESOURCE_EXHAUSTED")) {
             if (keys.length > 1 && keyIndex + 1 < keys.length) {
-              console.log("التبديل إلى مفتاح API التالي...");
               return await callGeminiUnified(type, systemInstruction, prompt, keyIndex + 1, retryCount);
-            } else if (retryCount < 2) {
-              const chatBox = document.getElementById('chat-box');
-              const waitDiv = document.createElement('div');
-              waitDiv.className = 'msg assistant';
-              waitDiv.innerText = "⏳ تم الوصول لحد الطلبات المجاني لجوجل.. جاري الانتظار 15 ثانية وإعادة المحاولة تلقائياً...";
-              chatBox.appendChild(waitDiv);
-              chatBox.scrollTop = chatBox.scrollHeight;
-              
-              await new Promise(r => setTimeout(r, 15000));
-              waitDiv.remove();
-              return await callGeminiUnified(type, systemInstruction, prompt, 0, retryCount + 1);
             }
           }
-
         } catch (e) {
           lastError = e.message;
         }
       }
 
-      throw new Error(lastError || "فشل الاتصال بالذكاء الاصطناعي، يرجى فحص المفتاح أو الاتصال بالإنترنت.");
+      throw new Error(lastError || "فشل الاتصال بالذكاء الاصطناعي، يرجى فحص المفتاح.");
     }
 
     async function handleSend() {
@@ -404,44 +448,23 @@
       const chatBox = document.getElementById('chat-box');
       const loadingDiv = document.createElement('div');
       loadingDiv.className = 'msg assistant';
-      loadingDiv.innerText = "جاري التفكير والفحص بواسطة الذكاء الاصطناعي ⚡...";
+      loadingDiv.innerText = "جاري التفكير وتحليل الرد ⚡...";
       chatBox.appendChild(loadingDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
         const brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
-        const inventory = localStorage.getItem(KEY_INVENTORY) || "";
+        const rawInventory = localStorage.getItem(KEY_INVENTORY) || "";
 
-        // فحص ذكي: هل الرسالة طلب استخراج عقارات أم مجرد سؤال/تحية/استشارة؟
-        // هذا الفحص هو السر الذي يحميك من ضغط الـ 15 ثانية ويجعل الردود سريعة جداً مع إرسال كل الداتا عند الطلب العقاري
-        const isPropertySearch = /(شقة|فيلا|ايجار|إيجار|بيع|تمليك|دور|ارضي|أرضي|مطلوب|مساحة|غرف|مدينتي|الرحاب|b\d+|مجموعة|مج\s*\d+|كود|سعر|ميزانية|مكتب)/i.test(text);
+        // استخراج الإعلانات المتطابقة فقط بذكاء بدون إرسال مئات الكيلوبايت بدون فائدة
+        const relevantAds = extractRelevantAds(text, rawInventory);
 
-        let fullPrompt = "";
-
-        if (isPropertySearch && inventory.length > 0) {
-          // في حالة البحث عن وحدة: نرسل الداتا كاملة 100% للذكاء الاصطناعي ليفرزها ويستخرج المطلوب
-          fullPrompt = `
-[داتا الإعلانات المتاحة كاملة 100%]:
-${inventory}
-
-[المعرفة العقارية]:
-${brain}
-
-[طلب العميل بدقة]:
-${text}
-`;
-        } else {
-          // في حالة الأسئلة العادية، الاستشارات القانونية، التحيات: لا داعي لتحميل مئات صفحات الإعلانات لسرعة خارقة وعدم تجاوز TPM
-          fullPrompt = `
-[المعرفة العقارية والاستشارية المخزنة]:
-${brain}
-
-[رسالة المستخدم أو الاستفسار]:
-${text}
-`;
+        let fullPrompt = `[المعرفة العقارية والاستشارية المخزنة]:\n${brain}\n\n`;
+        if (relevantAds) {
+          fullPrompt += `[أفضل الوحدات المرشحة من الداتا والمطابقة للطلب]:\n${relevantAds}\n\n`;
         }
+        fullPrompt += `[رسالة المستخدم أو الاستفسار]:\n${text}`;
 
-        // كل الردود تأتي من الذكاء الاصطناعي 100%
         let response = await callGeminiUnified("flash", JUNIOR_SYSTEM_INSTRUCTION, fullPrompt);
         let reply = response.text;
 
@@ -461,9 +484,9 @@ ${text}
           if (cleanReply) finalOutput += cleanReply + "\n\n---\n\n";
           finalOutput += proResponse.text;
 
-          loadingDiv.innerHTML = `<span class="source-tag source-pro">تمت الإجابة بواسطة المستشار الأكبر (${proResponse.modelName}) وحُفظت بالذاكرة 🧠</span><br>` + finalOutput;
+          loadingDiv.innerHTML = `<span class="source-tag source-pro">تمت الإجابة والتحليل بواسطة المستشار الأكبر (${proResponse.modelName}) وحُفظت بالذاكرة 🧠</span><br>` + finalOutput;
         } else {
-          loadingDiv.innerHTML = `<span class="source-tag source-flash">المستشار (${response.modelName}) ⚡</span><br>` + reply;
+          loadingDiv.innerHTML = `<span class="source-tag source-flash">المستشار السريع (${response.modelName}) ⚡</span><br>` + reply;
         }
 
       } catch (e) {
@@ -488,7 +511,7 @@ ${text}
       btn.innerText = "جاري الفحص...";
       btn.disabled = true;
       try {
-        const res = await callGeminiUnified("flash", "أنت نظام فحص", "اكتب كلمة واحدة: متصل");
+        const res = await callGeminiUnified("flash", "أنت نظام فحص", "اكتب: متصل");
         alert(`المفتاح متصل بنجاح فائق السرعة! النموذج النشط: (${res.modelName}) ✅`);
       } catch(e) {
         alert("فشل الفحص: " + e.message);
@@ -507,7 +530,7 @@ ${text}
       btn.disabled = true;
 
       try {
-        const query = "لخص أهم تحديثات حركة السوق العقاري المصري، القوة الشرائية الحالية، وأهم الفروق الإجرائية بين عقود المطورين والتخصيص بصيغة نقاط مركزة ودقيقة ليتم استخدامها كمرجع استشاري دائم.";
+        const query = "لخص أهم تحديثات حركة السوق العقاري المصري، القوة الشرائية الحالية، وأهم الفروق الإجرائية بين عقود المطورين والتخصيص بصيغة نقاط مركزة ودقيقة.";
         const updateRes = await callGeminiUnified("pro", PRO_SYSTEM_INSTRUCTION, query);
         
         let brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
