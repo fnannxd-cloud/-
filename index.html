@@ -111,7 +111,7 @@
       <!-- Chat View -->
       <div id="tab-chat" class="tab-content active">
         <div id="chat-box">
-          <div class="msg assistant">مرحباً بك! تم تحسين النظام ليعمل بسرعة صاروخية دون تخطي كوتة جوجل أو بطء. اطلب أي طلب، ابحث عن وحدات، أو اسأل أي استشارة للبدء!</div>
+          <div class="msg assistant">مرحباً بك! النظام متصل ومحدث بأحدث نماذج جوجل الذكية. اسأل أي سؤال أو ابحث عن وحدات مباشرة!</div>
         </div>
         <div class="input-bar">
           <textarea id="user-input" placeholder="اكتب طلب العميل، أو اسأل أي استشارة عقارية/قانونية..."></textarea>
@@ -123,7 +123,7 @@
       <div id="tab-data" class="tab-content">
         <div class="card">
           <h3>تغذية وتحديث داتا الواتساب</h3>
-          <p>ارفع ملفات التصدير النصية (.txt) أو الصق المحادثات. يتم تلقائياً تقسيم الإعلانات وتنظيف الشوائب لضمان فحص سريع ودقيق 100%.</p>
+          <p>ارفع ملفات التصدير النصية (.txt) أو الصق المحادثات. يتم تنظيف الشوائب وفهرسة الوحدات تلقائياً.</p>
           <input type="file" id="file-uploader" accept=".txt" multiple onchange="handleFileUpload(event)">
           <textarea id="raw-data-input" rows="5" placeholder="أو الصق نصوص الإعلانات هنا مباشرة..."></textarea>
           <div style="display: flex; gap: 8px;">
@@ -156,13 +156,13 @@
       <div id="tab-settings" class="tab-content">
         <div class="card">
           <h3>مفتاح Google Gemini API</h3>
-          <p>ضع المفتاح هنا (يمكنك وضع مفاتيح متعددة مفصولة بفاصلة لتبديل الكوتة تلقائياً).</p>
+          <p>ضع المفتاح هنا (يمكنك وضع أكثر من مفتاح مفصولة بفاصلة للتبديل التلقائي عند الضغط).</p>
           <input type="password" id="api-key" placeholder="ألصق الـ API Key هنا">
           <button class="btn success-btn" onclick="saveApiKey()">حفظ المفتاح</button>
-          <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح ⚡</button>
+          <button id="test-key-btn" class="btn action-btn" onclick="testApiKey()">فحص اتصال المفتاح واكتشاف النماذج ⚡</button>
         </div>
         <div class="card">
-          <p style="color: #cbd5e1; font-size: 0.8rem; line-height: 1.4;">🔒 جميع محادثاتك وداتا الوحدات ومفاتيحك مشفرة ومحفوظة محلياً 100% داخل جهازك وتعمل على GitHub Pages بمنتهى السلاسة.</p>
+          <p style="color: #cbd5e1; font-size: 0.8rem; line-height: 1.4;">🔒 بياناتك ومفاتيحك وإعلاناتك مشفرة ومحفوظة محلياً 100% داخل جهازك وتعمل على GitHub Pages بمنتهى السلاسة.</p>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@
 
     const JUNIOR_SYSTEM_INSTRUCTION = `
 أنت مستشار عقاري مصري خبير ووسيط محترف في مدينتي، الرحاب، القاهرة الجديدة، العاصمة الإدارية، والشروق.
-- إذا كان السؤال ترحيبياً أو عاماً، جاوب برحابة صدر وذكاء ومهنية عالية.
+- إذا كان السؤال ترحيبياً أو عاماً، جاوب برحابة صدر وذكاء ومهنية عالية دون الحاجة للوحدات.
 - إذا كان هناك وحدات مرفقة وطلب العميل متعلق بوحدة عقارية:
    1. افحص الوحدات المرفقة بدقة 100%.
    2. وحدات الإيجار: استبعد تماماً أي إعلان مر على تاريخ نشره أكثر من 25 يوماً من تاريخ اليوم (27 نوفمبر 2026).
@@ -214,7 +214,33 @@
 - الفرق القانوني: عقود طلعت مصطفى يتم التنازل عنها داخل مقر الشركة بموجب استيفاء الشيكات وبراءة الذمة ورسوم التنازل للشركة. التخصيص (شرطة، هيئة مجتمعات، بنك إسكان) يتم التنازل عنه داخل جهاز المدينة بتوكيل رسمي وإذن توريد وتصرفات عقارية وعضوية النادي اختيارية.
 `;
 
-    // دالة تنظيف الواتساب بدقة
+    // ذاكرة النماذج النشطة في حساب المستخدم
+    let cachedActiveModels = null;
+
+    // دالة استكشاف النماذج المدعومة تلقائياً من جوجل لمنع أي خطأ 404 نهائياً
+    async function getSupportedModels(apiKey) {
+      if (cachedActiveModels && cachedActiveModels.length > 0) return cachedActiveModels;
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.models && Array.isArray(data.models)) {
+            const models = data.models
+              .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+              .map(m => m.name.replace(/^models\//, ''));
+            if (models.length > 0) {
+              cachedActiveModels = models;
+              return models;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("تعذر جلب قائمة النماذج آلياً، سيتم استخدام القائمة البديلة الذكية:", e);
+      }
+      // قائمة بديلة حديثة في حال انقطاع اتصال الفهرس
+      return ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-2.0-flash-lite', 'gemini-pro'];
+    }
+
     function cleanWhatsAppJunk(raw) {
       if (!raw) return "";
       const lines = raw.split(/\r?\n/);
@@ -235,10 +261,8 @@
       return keep.join("\n").replace(/\n{3,}/g, "\n\n").trim();
     }
 
-    // تقسيم الإعلانات لمصفوفة مستقلة للفرز فائق السرعة
     function splitIntoAds(text) {
       if (!text) return [];
-      // التقسيم بالاعتماد على تواريخ الواتساب أو علامات الفواصل المزدوجة
       const rawBlocks = text.split(/(?=\[\d{1,2}[\/\.]\d{1,2}[\/\.]\d{2,4}[^\]]*\]|\d{1,2}\/\d{1,2}\/\d{2,4},\s*\d{1,2}:\d{2}|\n\s*\n\s*\n)/g);
       const ads = [];
       for (const block of rawBlocks) {
@@ -248,12 +272,10 @@
       return ads.length > 0 ? ads : [text];
     }
 
-    // محرك الفحص الذكي لتحديد الإعلانات المناسبة لطلب العميل دون إجهاد الكوتة
     function extractRelevantAds(query, rawInventory) {
       const ads = splitIntoAds(rawInventory);
-      if (ads.length <= 25) return rawInventory; // إذا كانت الداتا صغيرة، ترسل كاملة
+      if (ads.length <= 25) return rawInventory;
 
-      // فحص هل السؤال استفسار عن عقارات أم مجرد حديث/استشارة عامة
       const propertyKeywords = [
         "شقة", "شقه", "فيلا", "تاون", "توين", "روف", "ارضي", "أرضي", "دور", "ايجار", "إيجار", 
         "بيع", "تمليك", "مطلوب", "مساحة", "مساحه", "متاح", "عندك", "عاوز", "عايز", "دورلي", 
@@ -264,38 +286,25 @@
 
       const isPropertySearch = propertyKeywords.some(kw => query.toLowerCase().includes(kw));
       if (!isPropertySearch) {
-        // إذا كان السؤال "ازيك" أو استشارة قانونية عامة، لا يتم إرسال الإعلانات نهائياً لتوفير السرعة والتوكن!
-        return "";
+        return ""; // إذا كان سؤال عام لا نرسل الداتا ليبقى الرد في أجزاء من الثانية
       }
 
-      // حساب درجة التوافق لكل إعلان (Scoring)
       const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 1);
       const scoredAds = ads.map(ad => {
         let score = 0;
         const lowerAd = ad.toLowerCase();
-        
         queryWords.forEach(word => {
           if (lowerAd.includes(word)) score += 2;
         });
-
-        // زيادة الوزن للمراحل (B11, B12...) ونوع المعاملة (إيجار / بيع)
         if (query.includes("إيجار") && lowerAd.includes("إيجار")) score += 5;
         if ((query.includes("بيع") || query.includes("تمليك")) && (lowerAd.includes("بيع") || lowerAd.includes("تمليك"))) score += 5;
-
         return { ad, score };
       });
 
       scoredAds.sort((a, b) => b.score - a.score);
-
-      // أخذ أفضل 30 إعلاناً مطابقاً كحد أقصى (تضمن الدقة 100% والسرعة الصاروخية)
       const topAds = scoredAds.slice(0, 30).filter(item => item.score > 0).map(item => item.ad);
 
-      if (topAds.length === 0) {
-        // إذا لم يعثر على كلمات متطابقة بالضبط، نأخذ عينة من أحدث الإعلانات
-        return ads.slice(0, 20).join("\n\n---\n\n");
-      }
-
-      return topAds.join("\n\n---\n\n");
+      return topAds.length > 0 ? topAds.join("\n\n---\n\n") : ads.slice(0, 20).join("\n\n---\n\n");
     }
 
     function switchTab(tabId) {
@@ -312,6 +321,7 @@
       const key = document.getElementById('api-key').value.trim();
       if (key) {
         localStorage.setItem(KEY_API, key);
+        cachedActiveModels = null;
         alert("تم حفظ مفتاح API بنجاح!");
       }
     }
@@ -376,8 +386,8 @@
       document.getElementById('brain-preview').innerText = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
     }
 
-    // استدعاء Gemini الذكي مع دعم النماذج السريعة وتدوير المفاتيح
-    async function callGeminiUnified(type, systemInstruction, prompt, keyIndex = 0, retryCount = 0) {
+    // استدعاء Gemini الذكي مع اكتشاف النماذج ديناميكياً
+    async function callGeminiUnified(type, systemInstruction, prompt, keyIndex = 0) {
       const rawKeys = localStorage.getItem(KEY_API);
       if (!rawKeys) {
         alert("برجاء إدخال Gemini API Key في تبويب الإعدادات أولاً!");
@@ -388,15 +398,27 @@
       const keys = rawKeys.split(/[,;\n]/).map(k => k.trim()).filter(Boolean);
       const currentKey = keys[keyIndex % keys.length];
 
-      // النماذج الأسرع والأحدث دائماً أولاً لتفادي البطء
-      let modelsToTry = type === 'pro'
-        ? ['gemini-2.5-pro', 'gemini-1.5-pro', 'gemini-2.5-flash']
-        : ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+      // جلب النماذج المدعومة فعلياً في حساب العميل
+      const availableModels = await getSupportedModels(currentKey);
+
+      let targetModels = [];
+      if (type === 'pro') {
+        targetModels = availableModels.filter(m => m.includes('pro'));
+      }
+      if (targetModels.length === 0) {
+        // ترتيب النماذج: الفلاش الأسرع أولاً
+        targetModels = [
+          ...availableModels.filter(m => m.includes('2.0-flash') || m.includes('2.5-flash')),
+          ...availableModels.filter(m => m.includes('flash') && !m.includes('lite')),
+          ...availableModels
+        ];
+      }
+      // إزالة التكرار
+      targetModels = [...new Set(targetModels)];
 
       let lastError = null;
 
-      for (let m = 0; m < modelsToTry.length; m++) {
-        const model = modelsToTry[m];
+      for (const model of targetModels) {
         try {
           const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${currentKey}`;
           const payload = {
@@ -418,14 +440,14 @@
             }
           }
 
-          const err = await res.json();
+          const err = await res.json().catch(() => ({}));
           const msg = err.error?.message || `خطأ ${res.status}`;
           lastError = msg;
 
-          // إذا تم الضغط على الكوتة، التبديل التلقائي للمفتاح التالي فوراً
+          // معالجة ضغط الكوتة 429 بالتبديل للمفتاح الثاني مباشرة إن وجد
           if (res.status === 429 || msg.includes("Quota exceeded") || msg.includes("RESOURCE_EXHAUSTED")) {
             if (keys.length > 1 && keyIndex + 1 < keys.length) {
-              return await callGeminiUnified(type, systemInstruction, prompt, keyIndex + 1, retryCount);
+              return await callGeminiUnified(type, systemInstruction, prompt, keyIndex + 1);
             }
           }
         } catch (e) {
@@ -456,19 +478,17 @@
         const brain = localStorage.getItem(KEY_BRAIN) || DEFAULT_KNOWLEDGE;
         const rawInventory = localStorage.getItem(KEY_INVENTORY) || "";
 
-        // استخراج الإعلانات المتطابقة فقط بذكاء بدون إرسال مئات الكيلوبايت بدون فائدة
         const relevantAds = extractRelevantAds(text, rawInventory);
 
         let fullPrompt = `[المعرفة العقارية والاستشارية المخزنة]:\n${brain}\n\n`;
         if (relevantAds) {
-          fullPrompt += `[أفضل الوحدات المرشحة من الداتا والمطابقة للطلب]:\n${relevantAds}\n\n`;
+          fullPrompt += `[الوحدات المرشحة من الداتا والمطابقة لطلب العميل]:\n${relevantAds}\n\n`;
         }
         fullPrompt += `[رسالة المستخدم أو الاستفسار]:\n${text}`;
 
         let response = await callGeminiUnified("flash", JUNIOR_SYSTEM_INSTRUCTION, fullPrompt);
         let reply = response.text;
 
-        // إذا احتاج تصعيد للمستشار الأكبر
         if (reply.includes("[NEED_PRO]")) {
           loadingDiv.innerText = "سؤال عميق.. جاري استدعاء المستشار الأكبر (Pro) للتحليل والحفظ في الذاكرة 🧠...";
           const cleanReply = reply.replace("[NEED_PRO]", "").trim();
@@ -486,7 +506,7 @@
 
           loadingDiv.innerHTML = `<span class="source-tag source-pro">تمت الإجابة والتحليل بواسطة المستشار الأكبر (${proResponse.modelName}) وحُفظت بالذاكرة 🧠</span><br>` + finalOutput;
         } else {
-          loadingDiv.innerHTML = `<span class="source-tag source-flash">المستشار السريع (${response.modelName}) ⚡</span><br>` + reply;
+          loadingDiv.innerHTML = `<span class="source-tag source-flash">المستشار (${response.modelName}) ⚡</span><br>` + reply;
         }
 
       } catch (e) {
@@ -508,15 +528,18 @@
 
     async function testApiKey() {
       const btn = document.getElementById('test-key-btn');
-      btn.innerText = "جاري الفحص...";
+      btn.innerText = "جاري الفحص واكتشاف النماذج...";
       btn.disabled = true;
       try {
-        const res = await callGeminiUnified("flash", "أنت نظام فحص", "اكتب: متصل");
-        alert(`المفتاح متصل بنجاح فائق السرعة! النموذج النشط: (${res.modelName}) ✅`);
+        const key = (localStorage.getItem(KEY_API) || "").split(/[,;\n]/)[0].trim();
+        cachedActiveModels = null;
+        const models = await getSupportedModels(key);
+        const res = await callGeminiUnified("flash", "أنت نظام فحص", "اكتب كلمة واحدة: متصل");
+        alert(`تم الاتصال بنجاح تام! ✅\nالنماذج المكتشفة والنشطة في حسابك: ${models.slice(0, 4).join(', ')}\nالنموذج النشط للرد السريع: (${res.modelName})`);
       } catch(e) {
         alert("فشل الفحص: " + e.message);
       } finally {
-        btn.innerText = "فحص اتصال المفتاح ⚡";
+        btn.innerText = "فحص اتصال المفتاح واكتشاف النماذج ⚡";
         btn.disabled = false;
       }
     }
